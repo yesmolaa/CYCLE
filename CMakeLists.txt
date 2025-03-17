@@ -44,6 +44,7 @@ ${IMGUISOURCEFILE}
 add_executable(${PRONAME} 
     ${SOURCEFILE}
     ${IMGUISOURCEFILE}
+    ${GLFWSOURCEFILE}
 )
 
 # 链接 GLFW
