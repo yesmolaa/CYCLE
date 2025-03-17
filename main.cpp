@@ -133,7 +133,6 @@ public:
         if (!item.contains(today))
         {
             item[today] = json::object();  // 如果日期不存在，则创建
-            cout<<"----------wdwdwdwdwdw"<<'\n';
         }
         item[today][id]=content;
         item["random_seed"]=to_string(randomSeedNum+1);
