@@ -6,24 +6,26 @@
 class showByDay
 {
 private:
-    std::string readonly_text= "还没有计划";
+    std::string readonly_text = "还没有计划";
     std::shared_ptr<jsonManager> m_jsonManagerSptr;
 
 public:
     showByDay(std::shared_ptr<jsonManager> jsonManagerSharedPtr)
     {
-        this->m_jsonManagerSptr=jsonManagerSharedPtr;
+        this->m_jsonManagerSptr = jsonManagerSharedPtr;
         GetContentByDay();
     }
 
-    void GetContentByDay() {
-        std::string getstring=m_jsonManagerSptr->showEventByTime();
-        if(getstring.empty())
+    void GetContentByDay()
+    {
+        std::string getstring = m_jsonManagerSptr->showEventByTime();
+        if (getstring.empty())
         {
-            readonly_text="还没有计划";
+            readonly_text = "还没有计划";
         }
-        else {
-            readonly_text=getstring;
+        else
+        {
+            readonly_text = getstring;
         }
     }
 

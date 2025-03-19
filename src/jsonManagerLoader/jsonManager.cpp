@@ -229,16 +229,39 @@ void jsonManager::deleteEvent(const string &id)
 }
 
 // 按日期输出所有复习项
+// string jsonManager::showEventByTime()
+// {
+//     cout << "按时间输出所有复习项：" << endl;
+//     ostringstream oss;
+//     for (const auto &[date, items] : event.items())
+//     {
+//         oss << "日期: " << date << endl;
+//         for (const auto &[id, content] : items.items())
+//         {
+//             oss << "  - " << id << ": " << content << endl;
+//         }
+//     }
+//     return oss.str();
+// }
+
 string jsonManager::showEventByTime()
 {
     cout << "按时间输出所有复习项：" << endl;
     ostringstream oss;
     for (const auto &[date, items] : event.items())
     {
-        oss << "日期: " << date << endl;
+        oss << "日期: " << date << std::endl;
         for (const auto &[id, content] : items.items())
         {
-            oss << "  - " << id << ": " << content << endl;
+            // 将 content 中的 \n 替换为 std::endl,防止打印错误
+            string formattedContent = content;
+            size_t pos = 0;
+            while ((pos = formattedContent.find('\n', pos)) != string::npos)
+            {
+                formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
+                pos += 1; // 移动到下一个字符
+            }
+            oss << "  - " << id << ": " << formattedContent << std::endl;
         }
     }
     return oss.str();
@@ -254,7 +277,15 @@ string jsonManager::showEventByItem()
         oss << "日期: " << date << endl;
         for (const auto &[id, content] : items.items())
         {
-            oss << "  - " << id << ": " << content << endl;
+            // 将 content 中的 \n 替换为 std::endl,防止打印错误
+            string formattedContent = content;
+            size_t pos = 0;
+            while ((pos = formattedContent.find('\n', pos)) != string::npos)
+            {
+                formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
+                pos += 1; // 移动到下一个字符
+            }
+            oss << "  - " << id << ": " << formattedContent << endl;
         }
     }
     return oss.str();

@@ -118,7 +118,7 @@ int main(int, char**)
     auto JsonManager = std::make_shared<jsonManager>();
     //创建json管理员
     JsonManager->setCycle({2, 4, 6, 8, 10});
-    JsonManager->addEvent("学习 C++ 基础");
+    //JsonManager->addEvent("学习 C++ 基础");
     //初始化窗口对象
     todayTarget TodayTarget(JsonManager);
     showByDay ShowByDay(JsonManager);
