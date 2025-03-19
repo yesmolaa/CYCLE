@@ -3,15 +3,23 @@
 #include <memory>
 
 #include "glfwloader.h"
+#include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
+struct windowState
+{
+    bool show_demo_window = true;
+    bool show_another_window = false;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+}windowState;
 
 void imguiLoader::IOconfig()
 {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    this->io = ImGui::GetIO();
+    //this->io = ImGui::GetIO();
     (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
@@ -21,7 +29,17 @@ void imguiLoader::IOconfig()
     // io.ConfigViewportsNoTaskBarIcon = true;
 }
 
+ImGuiIO& imguiLoader::getIO()
+{
+    return this->io;
+}
+
 void imguiLoader::getGLFWobj(std::shared_ptr<glfwloader> o_glfwloader) { this->m_glfwLoader = o_glfwloader; }
+
+ImVec4 imguiLoader::getWindowState()
+{
+    return windowState.clear_color;
+}
 
 void imguiLoader::setStyle()
 {
@@ -59,7 +77,7 @@ void imguiLoader::satrtImguiFrame()
 
 void imguiLoader::showDemoWindow()
 {
-    if (this->windowState.show_demo_window) ImGui::ShowDemoWindow(&this->windowState.show_demo_window);
+    if (windowState.show_demo_window) ImGui::ShowDemoWindow(&windowState.show_demo_window);
 }
 
 void imguiLoader::showMyWindow()
@@ -73,11 +91,11 @@ void imguiLoader::showMyWindow()
 
         ImGui::Text("This is some useful text.");  // Display some text (you can use a format strings too)
         ImGui::Checkbox("Demo Window",
-                        &this->windowState.show_demo_window);  // Edit bools storing our window open/close state
-        ImGui::Checkbox("Another Window", &this->windowState.show_another_window);
+                        &windowState.show_demo_window);  // Edit bools storing our window open/close state
+        ImGui::Checkbox("Another Window", &windowState.show_another_window);
 
         ImGui::SliderFloat("float", &f, 0.0f, 1.0f);  // Edit 1 float using a slider from 0.0f to 1.0f
-        ImGui::ColorEdit3("clear color", (float*)&this->windowState.clear_color);  // Edit 3 floats representing a color
+        ImGui::ColorEdit3("clear color", (float*)&windowState.clear_color);  // Edit 3 floats representing a color
 
         if (ImGui::Button(
                 "Button"))  // Buttons return true when clicked (most widgets return true when edited/activated)
@@ -89,14 +107,14 @@ void imguiLoader::showMyWindow()
         ImGui::End();
     }
     // 3. Show another simple window.
-    if (this->windowState.show_another_window)
+    if (windowState.show_another_window)
     {
         ImGui::Begin(
             "Another Window",
-            &this->windowState.show_another_window);  // Pass a pointer to our bool variable (the window will have a
+            &windowState.show_another_window);  // Pass a pointer to our bool variable (the window will have a
                                                       // closing button that will clear the bool when clicked)
         ImGui::Text("Hello from another window!");
-        if (ImGui::Button("Close Me")) this->windowState.show_another_window = false;
+        if (ImGui::Button("Close Me")) windowState.show_another_window = false;
         ImGui::End();
     }
 }

@@ -29,15 +29,22 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
+//添加json管理
+#include "jsonManager.h"
+//添加窗口头
+#include "createItems.h"
 #include "glfwloader.h"
+#include "setCycle.h"
+#include "showByDay.h"
+#include "showByItem.h"
+#include "todayTarget.h"
 
 // Main code
 int main(int, char**)
 {
-    auto GlfwLoader=std::make_shared<glfwloader>();
+    auto GlfwLoader = std::make_shared<glfwloader>();
     GlfwLoader->glfwInitialize();
     GlfwLoader->glfwCreatWindow();
-
 
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
@@ -51,10 +58,14 @@ int main(int, char**)
     // io.ConfigViewportsNoAutoMerge = true;
     // io.ConfigViewportsNoTaskBarIcon = true;
 
+
+
+
+
+    ////设置风格///////////////////////////////////////////////////////////////////////////////////////////
     // Setup Dear ImGui style
     // ImGui::StyleColorsDark();
     ImGui::StyleColorsLight();
-
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular
     // ones.
     ImGuiStyle& style = ImGui::GetStyle();
@@ -63,6 +74,24 @@ int main(int, char**)
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
     }
+    // 可选：设置全局圆角（需要 ImGui 1.84+）
+    style.WindowRounding = 5.0f;
+    style.ChildRounding = 5.0f;
+    style.FrameRounding = 5.0f;
+    style.PopupRounding = 5.0f;
+    style.ScrollbarRounding = 5.0f;
+    style.GrabRounding = 5.0f;
+    // ImGui::SliderFloat("WindowRounding", &style.WindowRounding, 0.0f, 12.0f, "%.0f");
+    // ImGui::SliderFloat("ChildRounding", &style.ChildRounding, 0.0f, 12.0f, "%.0f");
+    // ImGui::SliderFloat("FrameRounding", &style.FrameRounding, 0.0f, 12.0f, "%.0f");
+    // ImGui::SliderFloat("PopupRounding", &style.PopupRounding, 0.0f, 12.0f, "%.0f");
+    // ImGui::SliderFloat("ScrollbarRounding", &style.ScrollbarRounding, 0.0f, 12.0f, "%.0f");
+    // ImGui::SliderFloat("GrabRounding", &style.GrabRounding, 0.0f, 12.0f, "%.0f");
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(GlfwLoader->getWindowPtr(), true);
@@ -71,12 +100,37 @@ int main(int, char**)
 #endif
     ImGui_ImplOpenGL3_Init(GlfwLoader->getGLSLversion());
 
+    //设置字体
+    ImFont* font = io.Fonts->AddFontFromFileTTF("font/SourceHanSansCN-Regular.otf", 30.0f, nullptr,
+                                                io.Fonts->GetGlyphRangesChineseFull());
+    IM_ASSERT(font != nullptr);
+
     // Our state
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    // Main loop
+
+
+
+
+    ////创建资源对象///////////////////////////////////////////////////////////////////////////////////
+    auto JsonManager = std::make_shared<jsonManager>();
+    //创建json管理员
+    JsonManager->setCycle({2, 4, 6, 8, 10});
+    JsonManager->addEvent("学习 C++ 基础");
+    //初始化窗口对象
+    todayTarget TodayTarget(JsonManager);
+    showByDay ShowByDay(JsonManager);
+    showByItem ShowByItem(JsonManager);
+    createItem CreateItem(JsonManager);
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+    // 主循环♻️
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the
     // imgui.ini file. You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
@@ -87,11 +141,12 @@ int main(int, char**)
 #endif
     {
         //判断窗口最小化活动
-        if(GlfwLoader->OnAttachMinimizeWindow(ImGui_ImplGlfw_Sleep))
+        if (GlfwLoader->OnAttachMinimizeWindow(ImGui_ImplGlfw_Sleep))
         {
             continue;
         }
-        else {
+        else
+        {
         }
 
         // Start the Dear ImGui frame
@@ -99,44 +154,23 @@ int main(int, char**)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code
-        // to learn more about Dear ImGui!).
-        if (show_demo_window) ImGui::ShowDemoWindow(&show_demo_window);
 
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-        {
-            static float f = 0.0f;
-            static int counter = 0;
 
-            ImGui::Begin("Hello, world!");  // Create a window called "Hello, world!" and append into it.
+        //必须在主循环中设置整个页面的dock///////////////////////////////////////////////////////
+        ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+        
+        
+        /////开始绘制窗口/////////////////////////////////////////////////////////////////////
 
-            ImGui::Text("This is some useful text.");           // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);  // Edit bools storing our window open/close state
-            ImGui::Checkbox("Another Window", &show_another_window);
+        CreateItem.showWindow();
+        setCycle SetCycle;
+        ShowByItem.showWindow();
+        ShowByDay.showWindow();
+        TodayTarget.showWindow();
 
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);             // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&clear_color);  // Edit 3 floats representing a color
 
-            if (ImGui::Button(
-                    "Button"))  // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
+        //////////////////////////////////////////////////////////////////////////
 
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-            ImGui::End();
-        }
-
-        // 3. Show another simple window.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window",
-                         &show_another_window);  // Pass a pointer to our bool variable (the window will have a closing
-                                                 // button that will clear the bool when clicked)
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me")) show_another_window = false;
-            ImGui::End();
-        }
 
         ImGui::Render();
         GlfwLoader->clearWindow(clear_color);
@@ -153,7 +187,6 @@ int main(int, char**)
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
-    
 
         GlfwLoader->SwapFrame();
     }

@@ -2,7 +2,6 @@
 #include <memory>
 
 #include "glfwloader.h"
-
 #include "imgui.h"
 
 class imguiLoader
@@ -10,16 +9,14 @@ class imguiLoader
 private:
     std::shared_ptr<glfwloader> m_glfwLoader;
     ImGuiIO& io;
-    struct windowState
-    {
-        bool show_demo_window = true;
-        bool show_another_window = false;
-        ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-    }windowState;
 
 public:
+    // 构造函数，通过注入 ImGui::GetIO() 的引用来初始化 io
+    explicit imguiLoader(std::shared_ptr<glfwloader> glfwLoader) : m_glfwLoader(glfwLoader), io(ImGui::GetIO()) {}
     void IOconfig();
+    ImGuiIO& getIO();
     void getGLFWobj(std::shared_ptr<glfwloader>);
+    ImVec4 getWindowState();
     void setStyle();
     void setPlatformRendererBackend();
     void satrtImguiFrame();

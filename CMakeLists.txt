@@ -34,21 +34,49 @@ file(GLOB GLADSOURCEFILE
 file(GLOB GLFWSOURCEFILE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/glfwLoader/*.cpp
 )
+# imguiLoader的源文件
+# file(GLOB IMGUILOADERSOURCEFILE
+#     ${CMAKE_CURRENT_SOURCE_DIR}/src/imguiLoader/*.cpp
+# )
+# jsonManager的源文件
+file(GLOB JSONMANAGERSOURCEFILE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/jsonManagerLoader/*.cpp
+)
+
+
+
 
 
 message("收集到的源文件： " 
 ${SOURCEFILE}
 ${IMGUISOURCEFILE}
+${GLFWSOURCEFILE}
+# ${IMGUILOADERSOURCEFILE}
 )
 
 add_executable(${PRONAME} 
     ${SOURCEFILE}
     ${IMGUISOURCEFILE}
     ${GLFWSOURCEFILE}
+    # ${IMGUILOADERSOURCEFILE}
+    ${JSONMANAGERSOURCEFILE}
 )
 
 # 链接 GLFW
 target_link_libraries(${PRONAME} PRIVATE glfw OpenGL::GL)
+
+
+
+
+
+# 自己写的窗口的头文件
+SET(MYWINDOWS
+${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/creatItems
+${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/setCycles
+${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/showTargets
+${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/todayTargets
+)
+
 
 target_include_directories(${PRONAME} PUBLIC
     # c++json的头文件目录
@@ -61,4 +89,10 @@ target_include_directories(${PRONAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/element/glad/include
     # glfwLoader的头文件
     ${CMAKE_CURRENT_SOURCE_DIR}/src/glfwLoader
+    # imguiloader的头文件
+    # ${CMAKE_CURRENT_SOURCE_DIR}/src/imguiLoader
+    # 自己的窗口头文件
+    ${MYWINDOWS}
+    # jsonmanager头文件
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/jsonManagerLoader
 )

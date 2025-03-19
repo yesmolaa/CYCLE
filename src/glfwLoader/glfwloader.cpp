@@ -49,7 +49,7 @@ bool glfwloader::glfwInitialize()
 bool glfwloader::glfwCreatWindow()
 {
     // Create window with graphics context
-    this->windowPrt = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
+    this->windowPrt = glfwCreateWindow(1600, 1200, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
     if (this->windowPrt == nullptr) return false;
     glfwMakeContextCurrent(this->windowPrt);
     glfwSwapInterval(1);  // Enable vsync
