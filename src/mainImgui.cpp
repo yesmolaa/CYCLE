@@ -11,16 +11,14 @@
 #include <stdio.h>
 
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 
-#include "glfwloader.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #define GL_SILENCE_DEPRECATION
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <GLES2/gl2.h>
-#endif
+
 #include <GLFW/glfw3.h>  // Will drag system OpenGL headers
 
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and
@@ -31,22 +29,16 @@
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
 
-const char* glsl_version = "#version 130";
-
-// This example can also compile and run with Emscripten! See 'Makefile.emscripten' for details.
-#ifdef __EMSCRIPTEN__
-#include "../libs/emscripten/emscripten_mainloop_stub.h"
-#endif
-
 #include "glfwloader.h"
 
 // Main code
 int main(int, char**)
 {
-    glfwloader glfwLoader;
-    glfwLoader.glfwInitialize();
+    auto GlfwLoader=std::make_shared<glfwloader>();
+    GlfwLoader->glfwInitialize();
+    GlfwLoader->glfwCreatWindow();
 
-    glfwLoader.glfwCreatWindow();
+
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -73,33 +65,11 @@ int main(int, char**)
     }
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(glfwLoader.getWindowPtr(), true);
+    ImGui_ImplGlfw_InitForOpenGL(GlfwLoader->getWindowPtr(), true);
 #ifdef __EMSCRIPTEN__
     ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
 #endif
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use
-    // ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your
-    // application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling
-    // ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-    // - Read 'docs/FONTS.md' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double
-    // backslash \\ !
-    // - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See
-    // Makefile.emscripten for details.
-    // io.Fonts->AddFontDefault();
-    // io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    // ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr,
-    // io.Fonts->GetGlyphRangesJapanese()); IM_ASSERT(font != nullptr);
+    ImGui_ImplOpenGL3_Init(GlfwLoader->getGLSLversion());
 
     // Our state
     bool show_demo_window = true;
@@ -113,11 +83,11 @@ int main(int, char**)
     io.IniFilename = nullptr;
     EMSCRIPTEN_MAINLOOP_BEGIN
 #else
-    while (!glfwWindowShouldClose(glfwLoader.getWindowPtr()))
+    while (!glfwWindowShouldClose(GlfwLoader->getWindowPtr()))
 #endif
     {
         //判断窗口最小化活动
-        if(glfwLoader.OnAttachMinimizeWindow(ImGui_ImplGlfw_Sleep))
+        if(GlfwLoader->OnAttachMinimizeWindow(ImGui_ImplGlfw_Sleep))
         {
             continue;
         }
@@ -169,7 +139,7 @@ int main(int, char**)
         }
 
         ImGui::Render();
-        glfwLoader.clearWindow(clear_color);
+        GlfwLoader->clearWindow(clear_color);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // Update and Render additional Platform Windows
@@ -183,8 +153,9 @@ int main(int, char**)
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
+    
 
-        glfwLoader.SwapFrame();
+        GlfwLoader->SwapFrame();
     }
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
@@ -195,7 +166,7 @@ int main(int, char**)
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
 
-    glfwLoader.DestoryGLFW();
+    GlfwLoader->DestoryGLFW();
 
     std::cin.get();
     return 0;
