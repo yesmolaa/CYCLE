@@ -2,7 +2,7 @@
 #include <nlohmann/json.hpp>
 #include "string"
 #include "vector"
-
+#include "PathSystem.h"
 class jsonManager
 {
 private:
@@ -12,6 +12,7 @@ private:
     std::string configPath = "config.json";
     std::string eventPath = "event.json";
     std::string itemPath = "item.json";
+    std::shared_ptr<PathSystem> m_PathSystem;
 
     
     // 加载 JSON 文件到内存
@@ -24,6 +25,9 @@ private:
     // 构造函数，加载 JSON 文件
     jsonManager();
     
+    //获取可执行变量路径
+    void getExePath(std::shared_ptr<PathSystem> pathSystem);
+
     //获取复习循环
     std::vector<int> getCycle();
     

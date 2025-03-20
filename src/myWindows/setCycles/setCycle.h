@@ -85,7 +85,7 @@ public:
             //ImGui::InputInt(label.c_str(), &jsonCycle[i]);
             if (ImGui::InputInt(label.c_str(), &jsonCycle[i])) {
                 // 如果输入控件失去焦点且值被提交，ImGui::InputInt 返回 true
-                std::cout<<"发生一次修改"<<std::endl;
+                //std::cout<<"发生一次修改"<<std::endl;
                 if(jsonCycle[i]>=1)
                 {
                     //std::cout<<"执行io"<<std::endl;

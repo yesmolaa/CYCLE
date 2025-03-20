@@ -42,6 +42,10 @@ file(GLOB GLFWSOURCEFILE
 file(GLOB JSONMANAGERSOURCEFILE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/jsonManagerLoader/*.cpp
 )
+# 可执行文件路径查找类
+file(GLOB PATHSORTSOURCEFILE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/PathSystem/*.cpp
+)
 
 
 
@@ -60,6 +64,7 @@ add_executable(${PRONAME}
     ${GLFWSOURCEFILE}
     # ${IMGUILOADERSOURCEFILE}
     ${JSONMANAGERSOURCEFILE}
+    ${PATHSORTSOURCEFILE}
 )
 
 # 链接 GLFW
@@ -80,6 +85,8 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/itemManager
 
 
 target_include_directories(${PRONAME} PUBLIC
+    # 路径处理的头文件
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
     # c++json的头文件目录
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/json
     # imgui的全局配置
@@ -96,4 +103,6 @@ target_include_directories(${PRONAME} PUBLIC
     ${MYWINDOWS}
     # jsonmanager头文件
     ${CMAKE_CURRENT_SOURCE_DIR}/src/jsonManagerLoader
+    # 可执行文件路径查找类
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/PathSystem
 )

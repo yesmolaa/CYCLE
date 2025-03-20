@@ -34,7 +34,7 @@ public:
         ImGui::Begin("创建待复习");
         // Note: we are using a fixed-sized buffer for simplicity here. See ImGuiInputTextFlags_CallbackResize
         // and the code in misc/cpp/imgui_stdlib.h for how to setup InputText() for dynamically resizing strings.
-        static char text[1024 * 16] = "添加一个新的复习计划吧！推荐格式：\n标题\n内容";
+        static char text[1024 * 16] = "添加一个新的复习计划吧！";
         static ImGuiInputTextFlags flags = ImGuiInputTextFlags_AllowTabInput;
         // ImGui::CheckboxFlags("ImGuiInputTextFlags_ReadOnly", &flags, ImGuiInputTextFlags_ReadOnly);
         // ImGui::CheckboxFlags("ImGuiInputTextFlags_AllowTabInput", &flags, ImGuiInputTextFlags_AllowTabInput);

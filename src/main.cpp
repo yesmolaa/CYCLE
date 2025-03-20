@@ -10,8 +10,13 @@
 
 #include <stdio.h>
 
+
+//条件编译，调用系统API查找可执行文件的路径
+#include "PathSystem.h"
+
 #include <iostream>
 #include <memory>
+
 #include <stdexcept>
 
 #include "imgui.h"
@@ -44,11 +49,26 @@
 // Main code
 int main(int, char**)
 {
+
+    //--------------------------------获取程序可执行文件路径路径-----------------------------------
+    auto pathSystem = std::make_shared<PathSystem>();
+    std::string exeDir = pathSystem->getExecutableDir();
+    if (exeDir.empty()) {
+        std::cerr << "无法获取可执行文件目录" << std::endl;
+        return 1;
+    }
+    //std::cout << "可执行文件目录: " << exeDir << std::endl;
+    //----------------------------------------------------------------------------------------
+
+
+    //加载GLFW启动配置--------------------------------------------------------
     auto GlfwLoader = std::make_shared<glfwloader>();
     GlfwLoader->glfwInitialize();
     GlfwLoader->glfwCreatWindow();
 
-    // Setup Dear ImGui context
+
+
+    // 设置ImGui 上下文-------------------------------------------------------
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -60,6 +80,13 @@ int main(int, char**)
     // io.ConfigViewportsNoAutoMerge = true;
     // io.ConfigViewportsNoTaskBarIcon = true;
 
+
+
+    //设置imgui.ini文件的路径----------------------------------------------------------
+    // 获取可执行文件的路径
+    // 设置 ImGui 的配置文件路径
+    std::string imguiInitPath=exeDir+"/imgui.ini";
+    io.IniFilename = imguiInitPath.c_str();
 
 
 
@@ -102,8 +129,12 @@ int main(int, char**)
 #endif
     ImGui_ImplOpenGL3_Init(GlfwLoader->getGLSLversion());
 
-    //设置字体
-    ImFont* font = io.Fonts->AddFontFromFileTTF("font/SourceHanSansCN-Regular.otf", 30.0f, nullptr,
+
+
+
+    //设置imgui渲染字体-----------------------------------------------------------------
+    std::string fontPath=exeDir+"font/SourceHanSansCN-Regular.otf";
+    ImFont* font = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 30.0f, nullptr,
                                                 io.Fonts->GetGlyphRangesChineseFull());
     IM_ASSERT(font != nullptr);
 
@@ -119,6 +150,7 @@ int main(int, char**)
 
     ////创建资源对象///////////////////////////////////////////////////////////////////////////////////
     auto JsonManager = std::make_shared<jsonManager>();
+    JsonManager->getExePath(pathSystem);
     //创建json管理员
     //JsonManager->setCycle({2, 4, 6, 8, 10});
     //JsonManager->addEvent("学习 C++ 基础");
