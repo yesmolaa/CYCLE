@@ -7,7 +7,7 @@
 #include <random>
 #include <string>
 #include <vector>
-
+#include <sstream>
 
 
 using json = nlohmann::json;
@@ -45,12 +45,32 @@ void jsonManager::saveFile(const string &path, const json &data)
         file << data.dump(4);  // 以美观的格式保存
     }
 }
+
 // 构造函数，加载 JSON 文件
 jsonManager::jsonManager()
 {
     LoadJSON();
-    setRandomSeed();
+    InitConfig();
 }
+
+
+std::vector<int> jsonManager::getCycle()
+{
+    loadFile(configPath, config);
+    // 检查 "review_cycle" 是否存在并且是一个数组
+    if (config.contains("review_cycle") && config["review_cycle"].is_array())
+    {
+        // 将 "review_cycle" 数组提取到 std::vector<int>
+        std::vector<int> review_cycle = config["review_cycle"];
+        return review_cycle;
+    }
+    else
+    {
+        std::cerr << "JSON 文件中缺少 'review_cycle' 或它不是一个数组。" << std::endl;
+        return {0,0};
+    }
+}
+
 
 // 加载 config.json 和 event.json
 void jsonManager::LoadJSON()
@@ -60,13 +80,21 @@ void jsonManager::LoadJSON()
     loadFile(itemPath, item);
 }
 
-//设置item.json的随机数种子，用于生成每个item的ID
-void jsonManager::setRandomSeed()
+//设置item.json的随机数种子、初始化周期
+void jsonManager::InitConfig()
 {
+    //初始化随机种
     string first = "1";
     if (!config.contains("random_seed"))
     {
         config["random_seed"] = first;  //初始化随机数种子为1
+    }
+
+    //初始化周期
+    std::vector<int> initCycles{2,4,6,8,10};
+    if (!config.contains("review_cycle"))
+    {
+        config["review_cycle"] = initCycles;
     }
     saveFile(configPath, config);
 }
@@ -165,6 +193,9 @@ void jsonManager::addEvent(const string &content)
     saveFile(eventPath, event);
 }
 
+
+
+
 // // 删除指定 ID 的复习项
 // void deleteEvent(const string id)
 // {
@@ -189,11 +220,15 @@ void jsonManager::addEvent(const string &content)
 //     }
 //     saveFile(eventPath, event);
 // }
+
+
+
 // 删除指定 ID 的复习项
 void jsonManager::deleteEvent(const string &id)
 {
     vector<string> datesToRemove;
 
+    //////////////////////////////删除event.json内容//////////////////////////////
     // 第一步：遍历并删除匹配的复习项，同时收集需要删除的日期
     for (auto &[date, items] : event.items())
     {
@@ -202,7 +237,7 @@ void jsonManager::deleteEvent(const string &id)
         {
             if (it.key().find(id) != string::npos)  // it->first 是键
             {
-                cout << it.key() << endl;
+                //cout << it.key() << endl;
                 it = items.erase(it);  // 正确地更新迭代器
             }
             else
@@ -223,9 +258,46 @@ void jsonManager::deleteEvent(const string &id)
     {
         event.erase(date);
     }
+    /////////////////////////////////////////////////////////////////////////////
+
+
+    datesToRemove.clear();
+
+
+    //////////////////////////////删除item.json内容//////////////////////////////
+    for(auto& [date,items]:item.items())
+    {
+        auto it=items.begin();
+        while(it!=items.end())
+        {
+            if(it.key().find(id) != string::npos)
+            {
+                it = items.erase(it);  // 正确地更新迭代器
+            }
+            else
+            {
+                ++it;
+            }
+        }
+        
+        // 如果当天没有复习项，记录日期以供后续删除
+        if (items.empty())
+        {
+            datesToRemove.push_back(date);
+        }
+    }
+    
+    // 删除空的日期项
+    for (const auto &date : datesToRemove)
+    {
+        item.erase(date);
+    }
+    ////////////////////////////////////////////////////////////////////////////
+
 
     // 保存文件
     saveFile(eventPath, event);
+    saveFile(itemPath, item);
 }
 
 // 按日期输出所有复习项
@@ -246,7 +318,7 @@ void jsonManager::deleteEvent(const string &id)
 
 string jsonManager::showEventByTime()
 {
-    cout << "按时间输出所有复习项：" << endl;
+    //cout << "按时间输出所有复习项：" << endl;
     ostringstream oss;
     for (const auto &[date, items] : event.items())
     {
@@ -261,8 +333,9 @@ string jsonManager::showEventByTime()
                 formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
                 pos += 1; // 移动到下一个字符
             }
-            oss << "  - " << id << ": " << formattedContent << std::endl;
+            oss << "  -ID " << id << ": "<<endl<< formattedContent <<endl;
         }
+        oss<<"------------------------------------------------------------------"<<endl;
     }
     return oss.str();
 }
@@ -270,7 +343,7 @@ string jsonManager::showEventByTime()
 // 按 Item 输出所有复习项
 string jsonManager::showEventByItem()
 {
-    cout << "按复习项目输出所有复习项：" << endl;
+    //cout << "按复习项目输出所有复习项：" << endl;
     ostringstream oss;
     for (const auto &[date, items] : item.items())
     {
@@ -285,8 +358,9 @@ string jsonManager::showEventByItem()
                 formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
                 pos += 1; // 移动到下一个字符
             }
-            oss << "  - " << id << ": " << formattedContent << endl;
+            oss << "  -ID " << id << ": "<<endl<< formattedContent << endl;
         }
+        oss<<"------------------------------------------------------------------"<<endl;
     }
     return oss.str();
 }
@@ -294,7 +368,7 @@ string jsonManager::showEventByItem()
 // 获取今天的复习项
 string jsonManager::TodayReview()
 {
-    cout << "今天的复习项：" << endl;
+    //cout << "今天的复习项：" << endl;
     string today = getCurrentDate();
     struct tm tm = {};
     strptime(today.c_str(), "%Y-%m-%d", &tm);  // 解析日期字符串
@@ -309,8 +383,17 @@ string jsonManager::TodayReview()
     ostringstream oss;
     for (const auto &[id, content] : event[today_std].items())
     {
-        oss << "  - " << id << ": " << content << endl;
+        // 将 content 中的 \n 替换为 std::endl,防止打印错误
+        string formattedContent = content;
+        size_t pos = 0;
+        while ((pos = formattedContent.find('\n', pos)) != string::npos)
+        {
+            formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
+            pos += 1; // 移动到下一个字符
+        }
+        oss << "  -ID " << id << ": "<<endl<<"---------------------------"<<endl<< formattedContent << endl<<"---------------------------"<<endl;
     }
+    oss<<"------------------------------------------------------------------"<<endl;
     return oss.str();
 }
 

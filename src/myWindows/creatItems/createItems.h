@@ -21,9 +21,9 @@ public:
         }
         else
         {
-            std::cout<<"empty test:p"<<charVec<<"p"<<std::endl;
+            //std::cout<<"empty test:p"<<charVec<<"p"<<std::endl;
             std::string pushString(charVec);
-            std::cout<<"empty test:p"<<pushString<<"p"<<std::endl;
+            //std::cout<<"empty test:p"<<pushString<<"p"<<std::endl;
             m_jsonManagerSptr->addEvent(pushString);
         }
     }
@@ -41,10 +41,11 @@ public:
         // ImGui::CheckboxFlags("ImGuiInputTextFlags_CtrlEnterForNewLine",
         // &flags,ImGuiInputTextFlags_CtrlEnterForNewLine);
         ImGui::InputTextMultiline("##source", text, IM_ARRAYSIZE(text),
-                                  ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 20), flags);
+                                  ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 15), flags);
         if (ImGui::Button("提交"))
         {
             pushItem(text);
+            text [ 0 ] = '\0' ;
         }
         ImGui::SameLine();
         if (ImGui::Button("清除"))

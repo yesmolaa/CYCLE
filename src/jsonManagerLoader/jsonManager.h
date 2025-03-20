@@ -1,7 +1,7 @@
 #pragma once
 #include <nlohmann/json.hpp>
 #include "string"
-
+#include "vector"
 
 class jsonManager
 {
@@ -13,24 +13,28 @@ private:
     std::string eventPath = "event.json";
     std::string itemPath = "item.json";
 
-    // 获取当前日期字符串，格式为 "YYYY-MM-DD"
-    std::string getCurrentDate();
-
+    
     // 加载 JSON 文件到内存
     void loadFile(const std::string &path, nlohmann::json &data);
-
+    
     // 保存 JSON 数据到文件
     void saveFile(const std::string &path, const nlohmann::json &data);
-public:
-
+    public:
+    
     // 构造函数，加载 JSON 文件
     jsonManager();
-
+    
+    //获取复习循环
+    std::vector<int> getCycle();
+    
     // 加载 config.json 和 event.json
     void LoadJSON();
-
+    
     //设置item.json的随机数种子，用于生成每个item的ID
-    void setRandomSeed();
+    void InitConfig();
+    
+    // 获取当前日期字符串，格式为 "YYYY-MM-DD"
+    std::string getCurrentDate();
 
     // 获取今天日期并记录在 config.json 中
     std::string getTime();

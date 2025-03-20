@@ -28,7 +28,7 @@ public:
         else {
             readonly_text=getstring;
         }
-        std::cout<<"打印C字符串"<<readonly_text<<std::endl;
+        //std::cout<<"打印C字符串"<<readonly_text<<std::endl;
     }
 
     void showWindow()

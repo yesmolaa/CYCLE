@@ -14,7 +14,7 @@ private:
     //窗口指针
     GLFWwindow* windowPrt;
     //GLSL版本
-    const char* glsl_version = "#version 130";
+    const char* glsl_version = "#version 150";
     
 public:
     //设置窗口配置

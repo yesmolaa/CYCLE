@@ -33,11 +33,13 @@
 #include "jsonManager.h"
 //添加窗口头
 #include "createItems.h"
+#include "itemManager.h"
 #include "glfwloader.h"
 #include "setCycle.h"
 #include "showByDay.h"
 #include "showByItem.h"
 #include "todayTarget.h"
+
 
 // Main code
 int main(int, char**)
@@ -114,17 +116,22 @@ int main(int, char**)
 
 
 
+
     ////创建资源对象///////////////////////////////////////////////////////////////////////////////////
     auto JsonManager = std::make_shared<jsonManager>();
     //创建json管理员
-    JsonManager->setCycle({2, 4, 6, 8, 10});
+    //JsonManager->setCycle({2, 4, 6, 8, 10});
     //JsonManager->addEvent("学习 C++ 基础");
     //初始化窗口对象
     todayTarget TodayTarget(JsonManager);
     showByDay ShowByDay(JsonManager);
     showByItem ShowByItem(JsonManager);
     createItem CreateItem(JsonManager);
+    itemManager ItemManager(JsonManager);
+    setCycle SetCycle(JsonManager);
+
     ///////////////////////////////////////////////////////////////////////////////////////
+
 
 
 
@@ -163,7 +170,8 @@ int main(int, char**)
         /////开始绘制窗口/////////////////////////////////////////////////////////////////////
 
         CreateItem.showWindow();
-        setCycle SetCycle;
+        ItemManager.showWindow();
+        SetCycle.showWindow();
         ShowByItem.showWindow();
         ShowByDay.showWindow();
         TodayTarget.showWindow();

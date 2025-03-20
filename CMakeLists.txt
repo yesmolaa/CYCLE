@@ -18,7 +18,7 @@ find_package(OpenGL REQUIRED)
 
 file(GLOB SOURCEFILE
 # ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
-${CMAKE_CURRENT_SOURCE_DIR}/src/mainImgui.cpp
+${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
 )
 
 # imgui的源文件
@@ -75,6 +75,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/creatItems
 ${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/setCycles
 ${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/showTargets
 ${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/todayTargets
+${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/itemManager
 )
 
 
