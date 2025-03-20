@@ -14,6 +14,9 @@
 #include <memory>
 #include <stdexcept>
 
+//可执行文件路径查找
+#include "PathSystem.h"
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -44,6 +47,19 @@
 // Main code
 int main(int, char**)
 {
+    //--------------------------------获取程序可执行文件路径路径-----------------------------------
+    auto pathSystem = std::make_shared<PathSystem>();
+    std::string exeDir = pathSystem->getExecutableDir();
+    if (exeDir.empty()) {
+        std::cerr << "无法获取可执行文件目录" << std::endl;
+        return 1;
+    }
+    //std::cout << "可执行文件目录: " << exeDir << std::endl;
+    //----------------------------------------------------------------------------------------
+
+
+
+
     auto GlfwLoader = std::make_shared<glfwloader>();
     GlfwLoader->glfwInitialize();
     GlfwLoader->glfwCreatWindow();
@@ -63,7 +79,16 @@ int main(int, char**)
 
 
 
+    //设置imgui.ini文件的路径----------------------------------------------------------
+    // 获取可执行文件的路径
+    // 设置 ImGui 的配置文件路径
+    std::string imguiInitPath=exeDir+"imgui.ini";
+    io.IniFilename = imguiInitPath.c_str();
 
+
+
+    
+    
     ////设置风格///////////////////////////////////////////////////////////////////////////////////////////
     // Setup Dear ImGui style
     // ImGui::StyleColorsDark();
@@ -90,35 +115,33 @@ int main(int, char**)
     // ImGui::SliderFloat("ScrollbarRounding", &style.ScrollbarRounding, 0.0f, 12.0f, "%.0f");
     // ImGui::SliderFloat("GrabRounding", &style.GrabRounding, 0.0f, 12.0f, "%.0f");
     ///////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
+    
+    
+    
+    
+    
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(GlfwLoader->getWindowPtr(), true);
-#ifdef __EMSCRIPTEN__
+    #ifdef __EMSCRIPTEN__
     ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
-#endif
+    #endif
     ImGui_ImplOpenGL3_Init(GlfwLoader->getGLSLversion());
-
-    //设置字体
-    ImFont* font = io.Fonts->AddFontFromFileTTF("font/SourceHanSansCN-Regular.otf", 30.0f, nullptr,
+    
+    
+    //设置imgui渲染字体-----------------------------------------------------------------
+    std::string fontPath=exeDir+"font/SourceHanSansCN-Regular.otf";
+    ImFont* font = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 30.0f, nullptr,
                                                 io.Fonts->GetGlyphRangesChineseFull());
     IM_ASSERT(font != nullptr);
 
+
     // Our state
-    bool show_demo_window = true;
-    bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-
-
-
 
 
     ////创建资源对象///////////////////////////////////////////////////////////////////////////////////
     auto JsonManager = std::make_shared<jsonManager>();
+    JsonManager->getExePath(pathSystem);
     //创建json管理员
     //JsonManager->setCycle({2, 4, 6, 8, 10});
     //JsonManager->addEvent("学习 C++ 基础");

@@ -35,6 +35,7 @@ public:
         {
             //std::cout<<"删除的ID是："<<deleteID<<std::endl;
             m_jsonManagerSptr->deleteEvent(std::to_string(deleteID));
+            deleteID=0;
         }
 
 

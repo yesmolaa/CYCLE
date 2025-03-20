@@ -20,16 +20,17 @@ private:
 public:
     setCycle(std::shared_ptr<jsonManager> jsonManagerSharedPtr)
     {
-
         this->m_jsonManagerSptr = jsonManagerSharedPtr;
         this->jsonCycle=jsonManagerSharedPtr->getCycle();
-        SetReviewTime();
         //记录初始化的循环
         //previousJsonCycle = jsonCycle;
-        // for(int i=0;i<jsonCycle.size();i++)
-        // {
-        //     std::cout<<"测试输出循环"<<jsonCycle[i]<<std::endl;
-        // }
+        for(int i=0;i<jsonCycle.size();i++)
+        {
+            std::cout<<"测试输出循环"<<jsonCycle[i]<<std::endl;
+        }
+        
+        SetReviewTime();
+        //std::cout<<n<<std::endl;
     }
 
     //更新复习日期
@@ -38,7 +39,7 @@ public:
         std::string today=m_jsonManagerSptr->getCurrentDate();
         struct tm tmevent = {};
         strptime(today.c_str(), "%Y-%m-%d", &tmevent);  // 解析日期字符串
-        reviewTime.reserve(jsonCycle.size());
+        reviewTime.resize(jsonCycle.size());//注意，resize和reserve的区别，此处不能使用reserve
         for(size_t i=0;i<jsonCycle.size();i++)
         {
             int days = jsonCycle[i];  // 获取复习间隔天数
@@ -47,7 +48,7 @@ public:
             char buffer[11];
             strftime(buffer, sizeof(buffer), "%Y-%m-%d", &tmevent);  // 格式化为 "YYYY-MM-DD"
             reviewTime[i]=buffer;
-            //std::cout<<"第"<<i<<"次复习时间为"<<reviewTime[i]<<std::endl;
+            std::cout<<"第"<<i<<"次复习时间为"<<reviewTime[i]<<std::endl;
         }
         //std::cout<<"---------------------测试-----------------------"<<std::endl;
     }
@@ -69,6 +70,7 @@ public:
         ImGui::PushItemWidth(150);
         
         // 动态获取 n 的值，这里假设 n 是从某处获取的，例如用户输入或其他逻辑
+
         static int n=jsonCycle.size();  // 示例值，您可以动态设置 n
         // 确保 vector 的大小至少为 n
         // if (jsonCycle.size() < static_cast<size_t>(n))

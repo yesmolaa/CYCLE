@@ -8,10 +8,19 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include "PathSystem.h"
 
 
 using json = nlohmann::json;
 using namespace std;
+
+
+void jsonManager::getExePath(std::shared_ptr<PathSystem> pathSystem)
+{
+    this->m_PathSystem=pathSystem;
+}
+
+
 // 获取当前日期字符串，格式为 "YYYY-MM-DD"
 string jsonManager::getCurrentDate()
 {
@@ -25,7 +34,10 @@ string jsonManager::getCurrentDate()
 // 加载 JSON 文件到内存
 void jsonManager::loadFile(const string &path, json &data)
 {
-    ifstream file(path);
+    //得到全局路径
+    std::string exeDir=m_PathSystem->getExecutableDir();//getExecutableDir函数在#include "PathSort.h"头文件
+    std::string filePath=exeDir+path;//拼接文件路径
+    ifstream file(filePath);
     if (file.is_open())
     {
         file >> data;
@@ -39,7 +51,10 @@ void jsonManager::loadFile(const string &path, json &data)
 // 保存 JSON 数据到文件
 void jsonManager::saveFile(const string &path, const json &data)
 {
-    ofstream file(path);
+    //得到全局路径
+    std::string exeDir=m_PathSystem->getExecutableDir();//getExecutableDir函数在#include "PathSort.h"头文件
+    std::string filePath=exeDir+path;//拼接文件路径
+    ofstream file(filePath);
     if (file.is_open())
     {
         file << data.dump(4);  // 以美观的格式保存
@@ -333,7 +348,7 @@ string jsonManager::showEventByTime()
                 formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
                 pos += 1; // 移动到下一个字符
             }
-            oss << "  -ID " << id << ": "<<endl<< formattedContent <<endl;
+            oss << "• ID " << id << ": "<<endl<< formattedContent <<endl;
         }
         oss<<"------------------------------------------------------------------"<<endl;
     }
@@ -358,7 +373,7 @@ string jsonManager::showEventByItem()
                 formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
                 pos += 1; // 移动到下一个字符
             }
-            oss << "  -ID " << id << ": "<<endl<< formattedContent << endl;
+            oss << "• ID " << id << ": "<<endl<< formattedContent << endl;
         }
         oss<<"------------------------------------------------------------------"<<endl;
     }
@@ -391,7 +406,7 @@ string jsonManager::TodayReview()
             formattedContent.replace(pos, 1, "\n"); // 这里其实不需要替换，因为 \n 已经是换行符
             pos += 1; // 移动到下一个字符
         }
-        oss << "  -ID " << id << ": "<<endl<<"---------------------------"<<endl<< formattedContent << endl<<"---------------------------"<<endl;
+        oss <<formattedContent << endl<<"---------------------------"<<endl;
     }
     oss<<"------------------------------------------------------------------"<<endl;
     return oss.str();

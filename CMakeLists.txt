@@ -42,6 +42,10 @@ file(GLOB GLFWSOURCEFILE
 file(GLOB JSONMANAGERSOURCEFILE
     ${CMAKE_CURRENT_SOURCE_DIR}/src/jsonManagerLoader/*.cpp
 )
+# 可执行文件路径查找
+file(GLOB PATHSORTSOURCEFILE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/PathSystem/*.cpp
+)
 
 
 
@@ -60,6 +64,7 @@ add_executable(${PRONAME}
     ${GLFWSOURCEFILE}
     # ${IMGUILOADERSOURCEFILE}
     ${JSONMANAGERSOURCEFILE}
+    ${PATHSORTSOURCEFILE}
 )
 
 # 链接 GLFW
@@ -96,4 +101,6 @@ target_include_directories(${PRONAME} PUBLIC
     ${MYWINDOWS}
     # jsonmanager头文件
     ${CMAKE_CURRENT_SOURCE_DIR}/src/jsonManagerLoader
+    # 可执行文件路径查找类
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/PathSystem
 )
