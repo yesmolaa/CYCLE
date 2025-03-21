@@ -13,7 +13,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
-
+#include "fstream"
 //可执行文件路径查找
 #include "PathSystem.h"
 
@@ -83,6 +83,7 @@ int main(int, char**)
     // 获取可执行文件的路径
     // 设置 ImGui 的配置文件路径
     std::string imguiInitPath=exeDir+"imgui.ini";
+    std::cout<<imguiInitPath<<std::endl;
     io.IniFilename = imguiInitPath.c_str();
 
 
@@ -129,10 +130,23 @@ int main(int, char**)
     
     
     //设置imgui渲染字体-----------------------------------------------------------------
-    std::string fontPath=exeDir+"font/SourceHanSansCN-Regular.otf";
-    ImFont* font = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 30.0f, nullptr,
-                                                io.Fonts->GetGlyphRangesChineseFull());
-    IM_ASSERT(font != nullptr);
+std::string fontPath = exeDir + "font\\SourceHanSansCN-Regular.ttf";  // 换成包含简体中文的字体
+std::ifstream file(fontPath);
+if (!file) {
+    std::cerr << "字体文件未找到: " << fontPath << std::endl;
+}
+
+std::cout << "尝试加载字体: " << fontPath << std::endl;
+
+ImFont* font = io.Fonts->AddFontFromFileTTF(fontPath.c_str(), 40.0f, nullptr,
+                                            io.Fonts->GetGlyphRangesChineseFull());
+if (font == nullptr) {
+    std::cerr << "字体加载失败！" << std::endl;
+} else {
+    std::cout << "字体加载成功！" << std::endl;
+}
+
+io.Fonts->Build();  // 确保 ImGui 刷新字体缓存
 
 
     // Our state

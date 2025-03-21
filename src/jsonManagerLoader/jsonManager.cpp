@@ -1,4 +1,4 @@
-#include "jsonManager.h"
+﻿#include "jsonManager.h"
 #include <ctime>
 #include <fstream>
 #include <iostream>
@@ -136,7 +136,7 @@ void jsonManager::setCycle(const vector<int> &cycle)
 
 // 添加一个复习项
 void jsonManager::addEvent(const string &content)
-{
+{  
     string today = getCurrentDate();
     getTime();  // 确保 config.json 的时间是最新的
 
@@ -163,7 +163,13 @@ void jsonManager::addEvent(const string &content)
     //向item.json插入单个复习计划
     // 检查日期是否存在
     struct tm tmitem = {};
-    strptime(today.c_str(), "%Y-%m-%d", &tmitem);  // 解析日期字符串
+    // 解析日期字符串（替代 strptime）
+    std::istringstream ss(today);
+    ss >> std::get_time(&tmitem, "%Y-%m-%d");
+    if (ss.fail()) {
+        std::cerr << "日期解析失败: " << today << std::endl;
+        return;
+    }
     //我们获得标准化的日期，比如2025-03-04而不是2025-3-4
     char today_std[11];
     strftime(today_std, sizeof(today_std), "%Y-%m-%d", &tmitem);  // 格式化为 "YYYY-MM-DD"
@@ -174,11 +180,19 @@ void jsonManager::addEvent(const string &content)
     item[today_std][id] = content;
     config["random_seed"] = to_string(randomSeedNum + 1);
     // 保存到 item.json
+    //std::cout<<"-----------------------1---------------------------"<<std::endl;
     saveFile(itemPath, item);
 
     //向event.json中插入日程
     struct tm tmevent = {};
-    strptime(today.c_str(), "%Y-%m-%d", &tmevent);  // 解析日期字符串
+    // 解析日期字符串（替代 strptime）
+    std::istringstream ssEvent(today);
+    ssEvent >> std::get_time(&tmevent, "%Y-%m-%d");
+    if (ssEvent.fail()) {
+        std::cerr << "日期解析失败: " << today << std::endl;
+        return;
+    }
+
     // 在 event.json 中添加复习项
     for (size_t i = 0; i < cycle.size(); ++i)
     {
@@ -203,9 +217,11 @@ void jsonManager::addEvent(const string &content)
         // 添加复习项
         event[date][id] = content;
     }
+    //std::cout<<"-----------------------2---------------------------"<<std::endl;
 
     // 保存到 event.json
     saveFile(eventPath, event);
+    //std::cout<<"-----------------------3---------------------------"<<std::endl;
 }
 
 
@@ -386,7 +402,13 @@ string jsonManager::TodayReview()
     //cout << "今天的复习项：" << endl;
     string today = getCurrentDate();
     struct tm tm = {};
-    strptime(today.c_str(), "%Y-%m-%d", &tm);  // 解析日期字符串
+    // 解析日期字符串（替代 strptime）
+    std::istringstream ss(today);
+    ss >> std::get_time(&tm, "%Y-%m-%d");
+    if (ss.fail()) {
+        std::cerr << "日期解析失败: " << today << std::endl;
+        return "";
+    }
     //我们获得标准化的日期，比如2025-03-04而不是2025-3-4
     char today_std[11];
     strftime(today_std, sizeof(today_std), "%Y-%m-%d", &tm);  // 格式化为 "YYYY-MM-DD"

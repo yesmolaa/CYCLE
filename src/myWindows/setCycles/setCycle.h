@@ -24,10 +24,10 @@ public:
         this->jsonCycle=jsonManagerSharedPtr->getCycle();
         //记录初始化的循环
         //previousJsonCycle = jsonCycle;
-        for(int i=0;i<jsonCycle.size();i++)
-        {
-            std::cout<<"测试输出循环"<<jsonCycle[i]<<std::endl;
-        }
+        // for(int i=0;i<jsonCycle.size();i++)
+        // {
+        //     std::cout<<"测试输出循环"<<jsonCycle[i]<<std::endl;
+        // }
         
         SetReviewTime();
         //std::cout<<n<<std::endl;
@@ -38,7 +38,13 @@ public:
     {
         std::string today=m_jsonManagerSptr->getCurrentDate();
         struct tm tmevent = {};
-        strptime(today.c_str(), "%Y-%m-%d", &tmevent);  // 解析日期字符串
+        // 解析日期字符串（替代 strptime）
+        std::istringstream ss(today);
+        ss >> std::get_time(&tmevent, "%Y-%m-%d");
+        if (ss.fail()) {
+            std::cerr << "日期解析失败: " << today << std::endl;
+            return;
+        }
         reviewTime.resize(jsonCycle.size());//注意，resize和reserve的区别，此处不能使用reserve
         for(size_t i=0;i<jsonCycle.size();i++)
         {
@@ -48,7 +54,7 @@ public:
             char buffer[11];
             strftime(buffer, sizeof(buffer), "%Y-%m-%d", &tmevent);  // 格式化为 "YYYY-MM-DD"
             reviewTime[i]=buffer;
-            std::cout<<"第"<<i<<"次复习时间为"<<reviewTime[i]<<std::endl;
+            //std::cout<<"第"<<i<<"次复习时间为"<<reviewTime[i]<<std::endl;
         }
         //std::cout<<"---------------------测试-----------------------"<<std::endl;
     }

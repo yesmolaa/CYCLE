@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 //该文件用于处理发布时可执行文件的相对路径问题，用于索引资源
 
 #include <iostream>

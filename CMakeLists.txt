@@ -7,9 +7,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set ( CMAKE_EXPORT_COMPILE_COMMANDS ON )
+add_compile_options(/utf-8)
 
 # 查找 GLFW
-find_package(glfw3 REQUIRED)
+#find_package(glfw3 REQUIRED)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/vendor/glfw-master)
+
 
 # 查找OPENGL源文件
 set(OpenGL_GL_PREFERENCE "GLVND")
@@ -86,7 +89,7 @@ ${CMAKE_CURRENT_SOURCE_DIR}/src/myWindows/itemManager
 
 target_include_directories(${PRONAME} PUBLIC
     # c++json的头文件目录
-    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/json
+    ${CMAKE_CURRENT_SOURCE_DIR}/vendor/json/include
     # imgui的全局配置
     ${CMAKE_CURRENT_SOURCE_DIR}/vendor/imgui-1.91.9-docking
     # imgui的opengl+glfw配置
