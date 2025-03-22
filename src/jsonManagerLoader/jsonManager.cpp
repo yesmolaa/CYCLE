@@ -150,7 +150,14 @@ void jsonManager::addEvent(const string &content)
 
     //从item.json获得随机数种子以生成ID
     string randomSeedString = config["random_seed"];
+    //std::cout<<"从文件读取到随机种:"<<randomSeedString<<std::endl;
+
     int randomSeedNum = std::stoi(randomSeedString);
+    config["random_seed"] = to_string(randomSeedNum + 1);
+    randomSeedString = config["random_seed"];//必须先让随机数—+1后再读取，防止覆盖上次内容
+    //读取一次随机数后必须立刻写回文件
+    saveFile(configPath, config);
+    
     // 创建一个随机数引擎，例如 Mersenne Twister
     std::mt19937 rng;
     rng.seed(randomSeedNum);
@@ -159,6 +166,7 @@ void jsonManager::addEvent(const string &content)
     // 生成随机数
     int random_number = dist(rng);
     string id = to_string(random_number);
+    //std::cout<<"输出ID"<<id<<std::endl;
 
     //向item.json插入单个复习计划
     // 检查日期是否存在
@@ -172,7 +180,6 @@ void jsonManager::addEvent(const string &content)
         item[today_std] = json::object();  // 如果日期不存在，则创建
     }
     item[today_std][id] = content;
-    config["random_seed"] = to_string(randomSeedNum + 1);
     // 保存到 item.json
     saveFile(itemPath, item);
 
